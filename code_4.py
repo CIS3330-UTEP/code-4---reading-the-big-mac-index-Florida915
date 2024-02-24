@@ -1,29 +1,52 @@
 import csv
 import pandas as pd
 big_mac_file = './big-mac-full-index.csv'
+df = pd.read_csv(big_mac_file)
 
 def get_big_mac_price_by_year(year,country_code):
-    filtered_data = big_mac_file[(big_mac_file['year'] == year) & (big_mac_file['country_code'] == country_code)]
+   query_text = f"(iso_a3 == '{country_code.upper()}' and date.str.contains('{year}'))"
+   usa_df = df.query(query_text)
+   return round(usa_df['dollar_price'].mean(),2)
 
-    mean_price = filtered_data['dollar_price'].mean()
-
-    rounded_mean_price = round(mean_price,2)
-
-    return rounded_mean_price
 
 def get_big_mac_price_by_country(country_code):
-    pass # Remove this line and code your function
+    query_text = f"(iso_a3 == '{country_code.upper()}')"
+    rus_df = df.query(query_text)
+    return round(rus_df['dollar_price'].mean(),2)
+
+
+
 
 def get_the_cheapest_big_mac_price_by_year(year):
-    pass # Remove this line and code your function
+    query_text = f"(date.str.contains('{year}'))"
+    ind_df = df.query(query_text)
+    min_df_idx = ind_df['dollar_price'].idxmin()
+    min_item = ind_df.loc[min_df_idx]
+    return f"{min_item['name']}({min_item['iso_a3']}): ${round(min_item['dollar_price'],2)}"
+
+
+
+
 
 def get_the_most_expensive_big_mac_price_by_year(year):
-    pass # Remove this line and code your function
+    query_text = f"(date.str.contains('{year}'))"
+    nor_df = df.query(query_text)
+    max_df_idx = nor_df['dollar_price'].idxmax()
+    max_item = nor_df.loc[max_df_idx]
+    return f"{max_item['name']}({max_item['iso_a3']}): ${round(max_item['dollar_price'],2)}"
+
+
 
 if __name__ == "__main__":
-    year = 2012
-    country_code = 'us'
+    first = get_big_mac_price_by_year(2003,"usa")
+    print(first)
 
-    result = get_big_mac_price_by_year(year, country_code)
-    print(f"The mean Big Mac price in {country_code} in {year}is : ${result}")
-    
+    second = get_big_mac_price_by_country("rus")
+    print(second)
+
+    third = get_the_cheapest_big_mac_price_by_year(2012)
+    print(third)
+
+    fourth = get_the_most_expensive_big_mac_price_by_year(2014)
+    print(fourth)
+# not using query text
